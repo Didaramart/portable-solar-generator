@@ -94,10 +94,73 @@
         .carousel-track {
             display: flex;
             transition: transform 0.5s ease-in-out;
+            will-change: transform; /* Performance optimization */
         }
         .carousel-item {
             min-width: 100%;
+            flex-shrink: 0;
         }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+        .carousel-indicator {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            background-color: rgba(255, 255, 255, 0.6);
+            transition: background-color 0.3s;
+        }
+        .carousel-indicator.active {
+            background-color: white;
+        }
+        /* 3D Flip Card Styles */
+        .flip-card {
+            perspective: 1000px; /* Creates the 3D space */
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s; /* Custom transition duration */
+            transform-style: preserve-3d;
+        }
+        .flip-card-inner.is-flipped {
+            transform: rotateY(180deg); /* JS will toggle this class */
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* For Safari */
+            backface-visibility: hidden; /* Hides the back of the card */
+            border-radius: 1.5rem; /* rounded-3xl */
+            overflow: hidden; /* Ensure images stay within rounded corners */
+        }
+        .flip-card-back {
+            transform: rotateY(180deg); /* Positions the back face */
+        }
+
+        /* Testimonial Animation */
+        @keyframes pop-in {
+            0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .testimonial-card {
+            opacity: 0; /* Start hidden */
+            transform: translateY(20px);
+            animation: pop-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        /* Staggered delay for the wave effect */
+        .testimonial-card:nth-child(1) { animation-delay: 0.1s; }
+        .testimonial-card:nth-child(2) { animation-delay: 0.25s; }
+        .testimonial-card:nth-child(3) { animation-delay: 0.4s; }
+
     </style>
 </head>
 
@@ -132,7 +195,7 @@
                     Quick Order
                 </button>
                 <button id="cta-bar-button" class="btn-pulse bg-yellow-400 text-red-900 font-black py-2 px-4 sm:px-5 rounded-full shadow-lg hover:bg-yellow-300 transition-colors text-sm sm:text-lg whitespace-nowrap" onclick="openModal('sticky-header')">
-                    Buy Now!
+                    ORDER NOW!
                 </button>
             </div>
         </div>
@@ -143,10 +206,17 @@
 
         <!-- Hero Section: Portable Solar Generator -->
         <section class="grid md:grid-cols-2 gap-8 items-center pt-10 pb-4 reveal-on-scroll">
-            <div class="aspect-square bg-white p-6 rounded-3xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
-                <!-- Placeholder for the main product image -->
-                <img src="https://placehold.co/600x600/22c55e/ffffff?text=150W+Solar+Generator" alt="150W Portable Solar Generator" class="w-full h-auto object-cover rounded-3xl" onerror="this.src='https://placehold.co/600x600/22c55e/ffffff?text=150W+Solar+Generator'">
-                <p class="text-center text-sm text-gray-500 mt-4 font-bold text-green-600">No. 1 Portable Power Solution in Nigeria Today! 🇳🇬</p>
+            <div class="flip-card aspect-square group">
+                <div id="hero-flip-card-inner" class="flip-card-inner shadow-2xl rounded-3xl">
+                    <!-- Front of the Card -->
+                    <div class="flip-card-front bg-white p-6">
+                        <img id="hero-flip-card-img-front" src="" alt="150W Portable Solar Generator - Front View" class="w-full h-full object-contain rounded-3xl">
+                    </div>
+                    <!-- Back of the Card -->
+                    <div class="flip-card-back bg-white p-6">
+                        <img id="hero-flip-card-img-back" src="" alt="150W Portable Solar Generator - Back View" class="w-full h-full object-contain rounded-3xl">
+                    </div>
+                </div>
             </div>
             
             <div class="space-y-6">
@@ -174,10 +244,27 @@
         </section>
 
         <!-- Product Image (Zoom In) -->
+        <!-- Image Carousel Section -->
         <section class="py-8 text-center zoom-in-scroll">
             <div class="bg-white p-2 rounded-2xl shadow-xl max-w-3xl mx-auto border-4 border-gray-100">
                 <!-- High-res product shot placeholder -->
-                <img src="https://placehold.co/800x400/22c55e/ffffff?text=150W+Solar+Generator+Ports+View" alt="Solar Generator Ports and Features" class="w-full rounded-lg" onerror="this.src='https://placehold.co/800x400/22c55e/ffffff?text=Solar+Generator+Ports+View'">
+                <img src="MAIN.webp" alt="Solar Generator Ports and Features" class="w-full rounded-lg" onerror="this.src='https://placehold.co/800x400/22c55e/ffffff?text=Solar+Generator+Ports+View'">
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-900 my-6">See The Generator In Action</h2>
+            <!-- 3D Flip Card Carousel -->
+            <div id="image-flip-carousel" class="relative max-w-3xl mx-auto aspect-square">
+                <div class="flip-card w-full h-full">
+                    <div id="flip-card-inner" class="flip-card-inner shadow-xl border-4 border-gray-100 rounded-2xl">
+                        <!-- Front Face -->
+                        <div class="flip-card-front bg-white p-2">
+                            <img id="flip-card-img-front" src="" alt="Solar Generator Image" class="w-full h-full object-contain rounded-xl">
+                        </div>
+                        <!-- Back Face -->
+                        <div class="flip-card-back bg-white p-2">
+                            <img id="flip-card-img-back" src="" alt="Solar Generator Image" class="w-full h-full object-contain rounded-xl">
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -197,15 +284,13 @@
         <!-- Video Placeholder -->
         <section class="py-12 text-center reveal-on-scroll">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Watch the Video Below! ⚠️</h2>
-            <div class="relative w-full max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black flex items-center justify-center group cursor-pointer">
-                <span class="text-white text-3xl font-bold z-10">PRODUCT DEMO VIDEO</span>
-                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 group-hover:bg-opacity-30 transition-all">
-                    <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                        <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-                    </div>
-                </div>
+            <div class="relative w-full max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black">
+                <video class="w-full h-full" controls poster="P3.webp">
+                    <source src="V1.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
             </div>
-            <p class="text-center text-sm text-gray-500 mt-4">Imagine never worrying about NEPA taking light during family time or business hours!</p>
+            <p class="text-center text-sm text-red-500 mt-4">Imagine never worrying about NEPA taking light during family time or business hours!😯</p>
         </section>
 
         <!-- 5 Reasons Why You Need This -->
@@ -258,22 +343,8 @@
         <!-- Customer Testimonials Placeholder -->
         <section class="py-12 text-center reveal-on-scroll">
             <h2 class="text-3xl font-bold text-gray-900 mb-8">What People Are Saying</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Testimonial 1 -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
-                    <p class="italic text-gray-700 mb-4">"This generator is a lifesaver! I can finally run my fan and watch TV when NEPA fails. No noise, no fuel stress. Highly recommend!"</p>
-                    <p class="font-bold text-gray-900">- Tunde O. (Lagos)</p>
-                </div>
-                <!-- Testimonial 2 -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
-                    <p class="italic text-gray-700 mb-4">"I use the 150W + Panel bundle for my small office. It powers my laptop and bulbs for 8 hours. It paid for itself in fuel savings in two months!"</p>
-                    <p class="font-bold text-gray-900">- Jane E. (Abuja)</p>
-                </div>
-                <!-- Testimonial 3 -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
-                    <p class="italic text-gray-700 mb-4">"The delivery was fast, and the product works as advertised. Simple to use, portable, and strong. Excellent value for money."</p>
-                    <p class="font-bold text-gray-900">- Kunle M. (Ibadan)</p>
-                </div>
+            <div id="testimonial-cards" class="grid md:grid-cols-3 gap-6 min-h-[220px]">
+                <!-- Testimonials will be dynamically inserted here by JavaScript -->
             </div>
         </section>
 
@@ -439,6 +510,33 @@
             { id: 'solar3', promo: '150W Gen + 30W Panel + 4 Bulbs', price: 139997, original: 180000, savings: 40003, description: 'The Ultimate Home/Shop Power Pack.' },
         ];
         
+        const HERO_CAROUSEL_IMAGES = [
+            'P5.webp', 'P2.webp', 'P1.jpg', 'P4.webp', 'Ai3.png',
+        ];
+
+        const CAROUSEL_IMAGES = [
+            'Ai1.png', 'Ai2.png', 'Ai3.png', 'Ai4.png', 'Ai5.png',
+            'Ai6.png', 'Ai7.png', 'Ai8.png', 'Ai9.png', 'P6.webp',
+        ];
+
+        const TESTIMONIALS = [
+            { text: "This generator is a lifesaver! I can finally run my fan and watch TV when NEPA fails. No noise, no fuel stress. Highly recommend!", author: "- Tunde O. (Lagos)" },
+            { text: "I use the 150W + Panel bundle for my small office. It powers my laptop and bulbs for 8 hours. It paid for itself in fuel savings in two months!", author: "- Jane E. (Abuja)" },
+            { text: "The delivery was fast, and the product works as advertised. Simple to use, portable, and strong. Excellent value for money.", author: "- Kunle M. (Ibadan)" },
+            { text: "Ah, this thing na baba! Since I buy am, NEPA no fit hold me ransom again. My shop get light 24/7. E sharp!", author: "- Emeka P. (Onitsha)" },
+            { text: "Perfect for my apartment. I can charge my phone, laptop, and even use my small blender. So convenient!", author: "- Fatima S. (Kano)" },
+            { text: "The solar panel option is the best decision I made. I haven't spent a kobo on fuel in weeks. This is the future!", author: "- David A. (Port Harcourt)" },
+            { text: "My brother, no be lie. This generator silent die. My neighbors no even know say I get light. I dey enjoy my peace.", author: "- Chidi B. (Enugu)" },
+            { text: "I was skeptical at first, but this product is legit. It powers my 32-inch TV and a standing fan for hours. I'm impressed.", author: "- Aisha I. (Kaduna)" },
+            { text: "Omo, the torchlight for this device bright well well! E be like stadium light. Very useful for night time.", author: "- Funke A. (Ogun)" },
+            { text: "Best customer service. They answered all my questions before I ordered and delivery was free to Jos. Thank you!", author: "- Grace L. (Jos)" },
+            { text: "I got the complete package with 4 bulbs. My entire flat is lit up now. No more darkness during my kids' study time.", author: "- Mr. & Mrs. Adewale (Oyo)" },
+            { text: "If you dey find solution for this light problem, abeg, look no further. This solar generator na the real deal. E worth every penny.", author: "- Ibrahim G. (Sokoto)" },
+        ];
+
+        let currentCarouselIndex = 0;
+        let carouselInterval = null; // To hold the interval for auto-play
+
         let selectedQuantityId = null;
 
         // --- 3. Utilities ---
@@ -491,10 +589,96 @@
             }, 1000);
         }
 
-        // --- 6. Core Interactions ---
-        // Carousel is not used anymore, but keeping the function definition for safety.
-        // function moveCarousel(dir) { /* removed since carousel is gone */ } 
+        // --- 6. 3D Flip Card Carousel Logic ---
+        function setupFlipCarousel() {
+            const innerCard = document.getElementById('flip-card-inner');
+            const frontImg = document.getElementById('flip-card-img-front');
+            const backImg = document.getElementById('flip-card-img-back');
+            let isFlipped = false;
+            let imageIndex = 0;
 
+            // Preload first two images
+            frontImg.src = CAROUSEL_IMAGES[0];
+            backImg.src = CAROUSEL_IMAGES[1];
+            imageIndex = 1;
+
+            setInterval(() => {
+                // Increment index, looping back to 0 if needed
+                imageIndex = (imageIndex + 1) % CAROUSEL_IMAGES.length;
+                const nextImageSrc = CAROUSEL_IMAGES[imageIndex];
+
+                if (isFlipped) {
+                    // The back is showing, so we will flip to the front.
+                    // Update the front image source for the next reveal.
+                    frontImg.src = nextImageSrc;
+                } else {
+                    // The front is showing, so we will flip to the back.
+                    // Update the back image source for the next reveal.
+                    backImg.src = nextImageSrc;
+                }
+                
+                innerCard.classList.toggle('is-flipped');
+                isFlipped = !isFlipped;
+            }, 3000); // Flip every 3 seconds
+        }
+
+        function setupHeroFlipCarousel() {
+            const innerCard = document.getElementById('hero-flip-card-inner');
+            const frontImg = document.getElementById('hero-flip-card-img-front');
+            const backImg = document.getElementById('hero-flip-card-img-back');
+            let isFlipped = false;
+            let imageIndex = 0;
+
+            // Preload first two images
+            frontImg.src = HERO_CAROUSEL_IMAGES[0];
+            backImg.src = HERO_CAROUSEL_IMAGES[1];
+            imageIndex = 1;
+
+            setInterval(() => {
+                // Increment index, looping back to 0 if needed
+                imageIndex = (imageIndex + 1) % HERO_CAROUSEL_IMAGES.length;
+                const nextImageSrc = HERO_CAROUSEL_IMAGES[imageIndex];
+
+                if (isFlipped) {
+                    // The back is showing, so we will flip to the front.
+                    // Update the front image source for the next reveal.
+                    frontImg.src = nextImageSrc;
+                } else {
+                    // The front is showing, so we will flip to the back.
+                    // Update the back image source for the next reveal.
+                    backImg.src = nextImageSrc;
+                }
+                
+                innerCard.classList.toggle('is-flipped');
+                isFlipped = !isFlipped;
+            }, 3000); // Flip every 3 seconds
+        }
+
+        // --- NEW: Testimonial Carousel Logic ---
+        function startTestimonialCarousel() {
+            const container = document.getElementById('testimonial-cards');
+            let testimonialIndex = 0;
+
+            function showNextTestimonials() {
+                container.innerHTML = ''; // Clear previous cards
+
+                // Get the next 3 testimonials, looping back if necessary
+                for (let i = 0; i < 3; i++) {
+                    const currentTestimonial = TESTIMONIALS[(testimonialIndex + i) % TESTIMONIALS.length];
+                    
+                    const card = document.createElement('div');
+                    // The 'testimonial-card' class triggers the animation defined in the CSS
+                    card.className = 'testimonial-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500 flex flex-col justify-between';
+                    card.innerHTML = `
+                        <p class="italic text-gray-700 mb-4">"${currentTestimonial.text}"</p>
+                        <p class="font-bold text-gray-900">${currentTestimonial.author}</p>
+                    `;
+                    container.appendChild(card);
+                }
+                testimonialIndex = (testimonialIndex + 3) % TESTIMONIALS.length;
+            }
+            setInterval(showNextTestimonials, 6000); // Change reviews every 6 seconds
+        }
         // --- 7. Quantity Selection Logic ---
         function renderQuantityOptions() {
             const container = document.getElementById('quantity-options');
@@ -590,7 +774,10 @@
         // --- Init ---
         window.onload = function() {
             renderQuantityOptions();
+            setupFlipCarousel();
+            setupHeroFlipCarousel();
             rotateAnnouncement();
+            startTestimonialCarousel();
             setInterval(rotateAnnouncement, 4000);
             startCountdown();
             selectQuantity('standard1'); // Default select the cheapest package
