@@ -63,12 +63,18 @@
         }
         body.dark .bg-white { background-color: #1f2937; color: white; }
         body.dark .text-gray-900 { color: #f9fafb; }
-        body.dark .text-gray-600 { color: #d1d5db; }
-        body.dark input, body.dark textarea { background-color: #374151; color: white; border-color: #4b5563; }
+        body.dark .text-gray-800 { color: #e5e7eb; } /* Lighter for better contrast */
+        body.dark .text-gray-700 { color: #d1d5db; } /* Lighter for better contrast */
+        body.dark .text-gray-600 { color: #d1d5db; } /* Lighter for better contrast */
+        body.dark .text-gray-500 { color: #9ca3af; } /* Lighter for better contrast */
+        body.dark input, body.dark textarea, body.dark select { background-color: #374151; color: white; border-color: #4b5563; }
         body.dark .bg-gray-50 { background-color: #2c3847; }
         body.dark .border-gray-200 { border-color: #4b5563; }
         body.dark .border-red-100 { border-color: #ef4444; }
         body.dark .bg-red-50 { background-color: #451a1a; }
+        body.dark .bg-red-100 { background-color: #450a0a; } /* Dark red for quantity cards */
+        body.dark .bg-yellow-100 { background-color: #422006; } /* Dark yellow for promo banner */
+        body.dark .bg-green-50 { background-color: #064e3b; } /* Dark green for warranty card */
         
         /* Modal Styles */
         .modal-card {
@@ -82,6 +88,22 @@
             overflow-y: auto;
             flex-grow: 1;
         }
+
+        /* NEW: Custom, Thinner Scrollbar Styles */
+        .modal-content-scrollable {
+            scrollbar-width: thin; /* For Firefox */
+            scrollbar-color: #a0aec0 #f7fafc; /* thumb & track color for Firefox */
+        }
+        .modal-content-scrollable::-webkit-scrollbar {
+            width: 8px; /* Thinner scrollbar for Chrome, Safari, Edge */
+        }
+        .modal-content-scrollable::-webkit-scrollbar-track {
+            background: #f7fafc; /* Light gray track */
+        }
+        .modal-content-scrollable::-webkit-scrollbar-thumb {
+            background-color: #a0aec0; /* Medium gray thumb */
+            border-radius: 20px;
+        }
         
         /* Selection Highlight */
         .quantity-highlight {
@@ -90,13 +112,135 @@
             transform: scale(1.02);
         }
         
+        /* NEW: Class to keep the inner hover border visible */
+        .quantity-highlight .inner-border {
+            opacity: 1;
+        }
+
+        /* NEW: Style for selected quantity in modal */
+        #modal-quantity-options label:has(input:checked) {
+            border-color: rgb(var(--red-main));
+            background-color: #fee2e2; /* red-100 */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* shadow-lg */
+            transform: scale(1.02);
+        }
+
+
         /* Carousel Styles */
         .carousel-track {
             display: flex;
             transition: transform 0.5s ease-in-out;
+            will-change: transform; /* Performance optimization */
         }
         .carousel-item {
             min-width: 100%;
+            flex-shrink: 0;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+        .carousel-indicator {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            background-color: rgba(255, 255, 255, 0.6);
+            transition: background-color 0.3s;
+        }
+        .carousel-indicator.active {
+            background-color: white;
+        }
+        /* 3D Flip Card Styles */
+        .flip-card {
+            perspective: 1000px; /* Creates the 3D space */
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s; /* Custom transition duration */
+            transform-style: preserve-3d;
+        }
+        .flip-card-inner.is-flipped {
+            transform: rotateY(180deg); /* JS will toggle this class */
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* For Safari */
+            backface-visibility: hidden; /* Hides the back of the card */
+            border-radius: 1.5rem; /* rounded-3xl */
+            overflow: hidden; /* Ensure images stay within rounded corners */
+        }
+        .flip-card-back {
+            transform: rotateY(180deg); /* Positions the back face */
+        }
+
+        /* Testimonial Animation */
+        @keyframes pop-in {
+            0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .testimonial-card {
+            opacity: 0; /* Start hidden */
+            transform: translateY(20px);
+            animation: pop-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        /* Staggered delay for the wave effect */
+        .testimonial-card:nth-child(1) { animation-delay: 0.1s; }
+        .testimonial-card:nth-child(2) { animation-delay: 0.25s; }
+        .testimonial-card:nth-child(3) { animation-delay: 0.4s; }
+
+        /* NEW: Quantity Card Slide-in Animation */
+        @keyframes slide-in-from-left {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slide-in-from-bottom {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-in-from-right {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .quantity-card-animated {
+            opacity: 0; /* Start hidden */
+            animation-duration: 0.7s;
+            animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation-fill-mode: forwards;
+        }
+        .quantity-card-animated:nth-child(1) {
+            animation-name: slide-in-from-left;
+        }
+        .quantity-card-animated:nth-child(2) {
+            animation-name: slide-in-from-bottom;
+            animation-delay: 0.2s;
+        }
+        .quantity-card-animated:nth-child(3) {
+            animation-name: slide-in-from-right;
+            animation-delay: 0.4s;
+        }
+
+        /* NEW: FAQ Accordion Styles */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), padding 0.5s ease;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px; /* Adjust as needed */
+            transition: max-height 1s ease-in-out;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
         }
     </style>
 </head>
@@ -132,7 +276,7 @@
                     Quick Order
                 </button>
                 <button id="cta-bar-button" class="btn-pulse bg-yellow-400 text-red-900 font-black py-2 px-4 sm:px-5 rounded-full shadow-lg hover:bg-yellow-300 transition-colors text-sm sm:text-lg whitespace-nowrap" onclick="openModal('sticky-header')">
-                    Buy Now!
+                    ORDER NOW!
                 </button>
             </div>
         </div>
@@ -143,27 +287,34 @@
 
         <!-- Hero Section: Portable Solar Generator -->
         <section class="grid md:grid-cols-2 gap-8 items-center pt-10 pb-4 reveal-on-scroll">
-            <div class="aspect-square bg-white p-6 rounded-3xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
-                <!-- Placeholder for the main product image -->
-                <img src="https://placehold.co/600x600/22c55e/ffffff?text=150W+Solar+Generator" alt="150W Portable Solar Generator" class="w-full h-auto object-cover rounded-3xl" onerror="this.src='https://placehold.co/600x600/22c55e/ffffff?text=150W+Solar+Generator'">
-                <p class="text-center text-sm text-gray-500 mt-4 font-bold text-green-600">No. 1 Portable Power Solution in Nigeria Today! 🇳🇬</p>
+            <div class="flip-card aspect-square group">
+                <div id="hero-flip-card-inner" class="flip-card-inner shadow-2xl rounded-3xl">
+                    <!-- Front of the Card -->
+                    <div class="flip-card-front bg-white p-6">
+                        <img id="hero-flip-card-img-front" src="" alt="150W Portable Solar Generator - Front View" class="w-full h-full object-contain rounded-3xl">
+                    </div>
+                    <!-- Back of the Card -->
+                    <div class="flip-card-back bg-white p-6">
+                        <img id="hero-flip-card-img-back" src="" alt="150W Portable Solar Generator - Back View" class="w-full h-full object-contain rounded-3xl">
+                    </div>
+                </div>
             </div>
             
             <div class="space-y-6">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-gray-900 leading-tight">
                     <span class="text-red-600">The SOLUTION:</span> 150W Portable Solar Generator
                 </h2>
-                <p class="text-xl text-gray-600 leading-relaxed">
+                <p class="text-xl text-center text-gray-600 leading-relaxed">
                     Tired of spending on fuel and dealing with NEPA failures? This is your ticket to <span class="font-bold text-gray-900">nonstop, affordable, and silent power</span> for your home, shop, or office! <br>
-                    <span class="bg-yellow-100 px-2 py-1 rounded-md border-l-4 border-yellow-500 block mt-2 font-semibold">Get it Today at Promo Price: ₦109,999 + FREE Delivery!</span>
+                    <span class="bg-yellow-200 px-2 py-1 rounded-md border-l-4 text-gray-900 border-yellow-500 block mt-2 font-semibold">Get it Today at Promo Price: ₦120,000 + FREE Delivery!</span>
                 </p>
                 <!-- Key Features List adapted from the source site -->
-                <ul class="space-y-3 text-lg text-gray-800 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">⚡</span> Powers TV, Fan, Laptop, Phones, and Bulbs.</li>
-                    <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">🔇</span> 100% Silent - No more generator noise!</li>
-                    <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">⛽</span> Zero Fuel Cost - Recharge with Solar or NEPA.</li>
-                    <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">🔋</span> Strong & Long-Lasting Built-in Battery.</li>
-                    <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">🛡️</span> 6 Safety Features for device protection.</li>
+                <ul class="space-y-3 text-lg text-center  bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <li class="flex items-center justify-center"><span class="text-green-500 mr-3 text-xl">⚡</span> Powers TV, Fan, Laptop, Phones, and Bulbs.</li>
+                    <li class="flex items-center justify-center"><span class="text-green-500 mr-3 text-xl">🔇</span> 100% Silent - No more generator noise!</li>
+                    <li class="flex items-center justify-center"><span class="text-green-500 mr-3 text-xl">⛽</span> Zero Fuel Cost - Recharge with Solar or NEPA.</li>
+                    <li class="flex items-center justify-center"><span class="text-green-500 mr-3 text-xl">🔋</span> Strong & Long-Lasting Built-in Battery.</li>
+                    <li class="flex items-center justify-center"><span class="text-green-500 mr-3 text-xl">🛡️</span> 6 Safety Features for device protection.</li>
                 </ul>
                 <div class="text-center pt-4">
                     <button class="btn-pulse w-full max-w-sm bg-red-600 text-white font-bold py-4 rounded-xl text-xl shadow-xl hover:bg-red-700 transition-colors mx-auto block" onclick="openModal('hero-section')">
@@ -174,10 +325,27 @@
         </section>
 
         <!-- Product Image (Zoom In) -->
+        <!-- Image Carousel Section -->
         <section class="py-8 text-center zoom-in-scroll">
             <div class="bg-white p-2 rounded-2xl shadow-xl max-w-3xl mx-auto border-4 border-gray-100">
                 <!-- High-res product shot placeholder -->
-                <img src="https://placehold.co/800x400/22c55e/ffffff?text=150W+Solar+Generator+Ports+View" alt="Solar Generator Ports and Features" class="w-full rounded-lg" onerror="this.src='https://placehold.co/800x400/22c55e/ffffff?text=Solar+Generator+Ports+View'">
+                <img src="MAIN.webp" alt="Solar Generator Ports and Features" class="w-full rounded-lg" onerror="this.src='https://placehold.co/800x400/22c55e/ffffff?text=Solar+Generator+Ports+View'">
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-900 my-6">See The Generator In Action</h2>
+            <!-- 3D Flip Card Carousel -->
+            <div id="image-flip-carousel" class="relative max-w-3xl mx-auto aspect-square">
+                <div class="flip-card w-full h-full">
+                    <div id="flip-card-inner" class="flip-card-inner shadow-xl border-4 border-gray-100 rounded-2xl">
+                        <!-- Front Face -->
+                        <div class="flip-card-front bg-white p-2">
+                            <img id="flip-card-img-front" src="" alt="Solar Generator Image" class="w-full h-full object-contain rounded-xl">
+                        </div>
+                        <!-- Back Face -->
+                        <div class="flip-card-back bg-white p-2">
+                            <img id="flip-card-img-back" src="" alt="Solar Generator Image" class="w-full h-full object-contain rounded-xl">
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -197,15 +365,13 @@
         <!-- Video Placeholder -->
         <section class="py-12 text-center reveal-on-scroll">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Watch the Video Below! ⚠️</h2>
-            <div class="relative w-full max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black flex items-center justify-center group cursor-pointer">
-                <span class="text-white text-3xl font-bold z-10">PRODUCT DEMO VIDEO</span>
-                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 group-hover:bg-opacity-30 transition-all">
-                    <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                        <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-                    </div>
-                </div>
+            <div class="relative w-full max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black">
+                <video id="product-video" class="w-full h-full" controls poster="P3.webp" preload="metadata">
+                    <source src="VV1.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
             </div>
-            <p class="text-center text-sm text-gray-500 mt-4">Imagine never worrying about NEPA taking light during family time or business hours!</p>
+            <p class="text-center text-sm text-red-500 mt-4">Imagine never worrying about NEPA taking light during family time or business hours!😯</p>
         </section>
 
         <!-- 5 Reasons Why You Need This -->
@@ -258,21 +424,92 @@
         <!-- Customer Testimonials Placeholder -->
         <section class="py-12 text-center reveal-on-scroll">
             <h2 class="text-3xl font-bold text-gray-900 mb-8">What People Are Saying</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Testimonial 1 -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
-                    <p class="italic text-gray-700 mb-4">"This generator is a lifesaver! I can finally run my fan and watch TV when NEPA fails. No noise, no fuel stress. Highly recommend!"</p>
-                    <p class="font-bold text-gray-900">- Tunde O. (Lagos)</p>
+            <div id="testimonial-cards" class="grid md:grid-cols-3 gap-6 min-h-[220px]">
+                <!-- Testimonials will be dynamically inserted here by JavaScript -->
+            </div>
+            <!-- NEW: Live Stats Section -->
+            <div class="mt-12 bg-white p-8 rounded-2xl shadow-xl max-w-4xl mx-auto border reveal-on-scroll">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <!-- Total Reviews -->
+                    <div class="border-r border-gray-200 pr-4">
+                        <p id="review-count" class="text-4xl font-extrabold text-gray-800">0</p>
+                        <p class="text-sm font-semibold text-gray-600 mt-1">Total Reviews</p>
+                    </div>
+                    <!-- Units Sold -->
+                    <div class="md:border-r border-gray-200 pr-4">
+                        <p id="sales-count" class="text-4xl font-extrabold text-yellow-800">0+</p>
+                        <p class="text-sm font-semibold text-gray-600 mt-1">Units Sold</p>
+                    </div>
+                    <!-- Positive Reviews -->
+                    <div class="border-r border-gray-200 pr-4">
+                        <p id="positive-reviews" class="text-4xl font-extrabold text-green-800">0</p>
+                        <p class="text-sm font-semibold text-gray-600 mt-1">Positive Reviews</p>
+                    </div>
+                    <!-- Negative Reviews -->
+                    <div>
+                        <p id="negative-reviews" class="text-4xl font-extrabold text-red-800">0</p>
+                        <p class="text-sm font-semibold text-red-600 mt-1">Negative Reviews</p>
+                    </div>
                 </div>
-                <!-- Testimonial 2 -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
-                    <p class="italic text-gray-700 mb-4">"I use the 150W + Panel bundle for my small office. It powers my laptop and bulbs for 8 hours. It paid for itself in fuel savings in two months!"</p>
-                    <p class="font-bold text-gray-900">- Jane E. (Abuja)</p>
+            </div>
+            <!-- NEW: Action Buttons -->
+            <div class="mt-8 flex justify-center gap-4 reveal-on-scroll">
+                <button onclick="openModal('stats-order')" class="btn-pulse bg-yellow-400 hover:bg-yellow-500 text-red-900 font-bold py-3 px-8 rounded-2xl shadow-lg transform hover:-translate-y-1 transition-all">🛒 Order Now</button>
+                <button onclick="openReviewModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-2xl shadow-lg transform hover:-translate-y-1 transition-all">💬 Review/Customer Service</button>
+            </div>
+
+        </section>
+
+
+        <!-- NEW: Product Specification Section -->
+        <section id="product-specifications" class="py-12 bg-gray-50 rounded-3xl p-8 md:p-12 my-12 reveal-on-scroll border">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">Detailed Specifications</h2>
+            <div class="grid md:grid-cols-2 gap-10 items-start">
+                <!-- Left side: Text Specifications -->
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Technical Details</h3>
+                    <ul class="list-disc list-inside space-y-3 text-gray-700 bg-white p-6 rounded-xl shadow-md border">
+                        <li><strong>Battery Capacity:</strong> 42000mAh / 155Wh Lithium-ion</li>
+                        <li><strong>AC Output:</strong> 220V, 150W (Modified Sine Wave)</li>
+                        <li><strong>DC Output:</strong> 9-12.5V / 10A (15A Max)</li>
+                        <li><strong>USB Ports:</strong> 2x USB 5V/2.1A, 1x USB QC3.0</li>
+                        <li><strong>Charging Time (Wall):</strong> Approx. 7-8 hours</li>
+                        <li><strong>Charging Time (Solar):</strong> Approx. 9-10 hours (with 60W panel)</li>
+                        <li><strong>Lifecycle:</strong> >500 cycles to 80%</li>
+                        <li><strong>Weight:</strong> 1.6 kg (3.5 lbs)</li>
+                        <li><strong>Dimensions:</strong> 186mm x 107mm x 180mm</li>
+                    </ul>
                 </div>
-                <!-- Testimonial 3 -->
-                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500">
-                    <p class="italic text-gray-700 mb-4">"The delivery was fast, and the product works as advertised. Simple to use, portable, and strong. Excellent value for money."</p>
-                    <p class="font-bold text-gray-900">- Kunle M. (Ibadan)</p>
+
+                <!-- Right side: Media Placeholders -->
+                <div class="space-y-8">
+                    <!-- Image Placeholder -->
+                    <div class="flip-card aspect-square">
+                        <div id="spec-flip-card-inner" class="flip-card-inner shadow-2xl rounded-3xl">
+                            <div class="flip-card-front bg-white p-2">
+                                <img id="spec-flip-card-img-front" src="P7.webp" alt="Product Specification Image - Front" class="w-full h-full object-contain rounded-2xl">
+                            </div>
+                            <div class="flip-card-back bg-white p-2">
+                                <img id="spec-flip-card-img-back" src="S4.webp" alt="Product Specification Image - Back" class="w-full h-full object-contain rounded-2xl">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Video Placeholder -->
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-black">
+                        <video class="w-full h-full" controls poster="R1.webp" preload="metadata">
+                            <source src="V2.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <!-- NEW: Image Carousel under video -->
+                    <div id="spec-image-carousel" class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-xl border-4 border-white">
+                        <div id="spec-carousel-track" class="carousel-track h-full">
+                            <!-- Carousel images will be populated by JS -->
+                        </div>
+                        <div id="spec-carousel-indicators" class="carousel-indicators">
+                            <!-- Carousel indicators will be populated by JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -294,15 +531,31 @@
                 </button>
             </div>
         </section>
-        
+
+        <!-- NEW: Warranty/Guarantee Section -->
+        <section class="py-12 bg-green-50 rounded-3xl p-8 md:p-12 my-12 border-2 border-green-200 reveal-on-scroll shadow-lg text-center">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-5xl text-green-600 mb-4">
+                    🛡️
+                </div>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Our 6-Month 100% Money-Back Guarantee</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    We stand behind the quality and performance of our Portable Solar Generator. That's why we offer a rock-solid <strong>6-month warranty</strong> on every purchase. If you are not completely satisfied for any reason within the first 6 months, we will provide a <strong>100% money refund</strong>, no questions asked. Your satisfaction and peace of mind are our top priorities.
+                </p>
+                <button class="mt-8 bg-green-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-md hover:bg-green-700 transform hover:-translate-y-1 transition-transform" onclick="openModal('warranty-guarantee')">
+                    Order With Confidence
+                </button>
+            </div>
+        </section>
+
         <!-- Final Order Form -->
         <section id="final-order-form-section" class="py-12 bg-white rounded-3xl shadow-xl p-8 mb-12 border-t-8 border-red-600 reveal-on-scroll">
             <h2 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">Final Step: Delivery Details (Pay On Delivery)</h2>
-            <p id="selected-qty-summary-final" class="text-center text-lg font-medium text-gray-700 mb-8 bg-gray-50 p-4 rounded-lg">
+            <p id="selected-qty-summary-final" class="text-center text-lg font-medium text-gray-700 mb-8 bg-gray-50 p-4 rounded-lg border-4 border-green-500 shadow-inner">
                 <!-- Summary inserted by JS -->
             </p>
             
-            <form id="form-2-submission" action="https://formspree.io/f/meovoqaq" method="POST" class="max-w-2xl mx-auto space-y-6">
+            <form id="form-2-submission" action="https://formspree.io/f/mdkrggaq" method="POST" class="max-w-2xl mx-auto space-y-6">
                 <input type="hidden" name="Source" value="Final Section Form">
                 <input type="hidden" name="Package_Selected" id="form-2-quantity-id">
                 <input type="hidden" name="Price_Total" id="form-2-price-total">
@@ -310,26 +563,36 @@
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Full Name*</label>
-                        <input type="text" name="Full Name" required class="w-full border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50">
+                        <input type="text" name="Full Name" required class="w-full border-black rounded-lg shadow-md p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">WhatsApp Number*</label>
-                        <input type="tel" name="WhatsApp Number" required class="w-full border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50" placeholder="080 XXXX XXXX">
+                        <input type="tel" name="WhatsApp Number" required class="w-full border-black rounded-lg shadow-md p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50" placeholder="080 XXXX XXXX">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Alternative Number (Optional)</label>
+                        <input type="tel" name="Alternative Number" class="w-full border-black rounded-lg shadow-md p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50" placeholder="Optional">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Delivery State*</label>
+                        <select name="Delivery State" required id="form-2-state-dropdown" class="w-full border-black rounded-lg shadow-md p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50">
+                            <!-- States will be populated by JS -->
+                        </select>
                     </div>
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Delivery State*</label>
-                    <input type="text" name="Delivery State" required placeholder="e.g. Lagos, Abuja, Kano" class="w-full border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Full Delivery Address*</label>
+                    <textarea name="Full Address" rows="3" required class="w-full border-black rounded-lg shadow-md p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50" placeholder="Street Address, City, Landmark"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Full Delivery Address*</label>
-                    <textarea name="Full Address" rows="3" required class="w-full border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50" placeholder="Street Address, City, Landmark"></textarea>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Delivery Note (Optional)</label>
+                    <textarea name="Delivery Note" rows="2" class="w-full border-black rounded-lg shadow-md p-3 focus:ring-red-500 focus:border-red-500 bg-gray-50" placeholder="e.g., 'Call before arrival', 'Deliver to security'"></textarea>
                 </div>
                 
-                <p class="text-sm text-center text-gray-500 p-2 border border-dashed rounded-lg">
-                    Please ensure you are **FULLY ready** for the package & have the money to pay at the point of delivery because stock is highly limited.
+                <p class="text-sm text-center text-red-500 p-2 border border-dashed rounded-lg">
+                    Please ensure you are <strong>FULLY ready</strong> for the package & have the money to pay at the point of delivery because stock is highly limited ⚠.
                 </p>
 
                 <button type="submit" class="btn-pulse w-full bg-green-600 text-white font-black py-4 rounded-xl text-2xl shadow-lg hover:bg-green-700 transition-transform transform hover:-translate-y-1">
@@ -343,11 +606,59 @@
         <div class="text-center pb-8">
             <h3 class="text-gray-700 font-bold mb-4">Got Questions? We're Here To Help!</h3>
             <div class="flex justify-center gap-4">
-                <a href="tel:07076688742" class="bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-green-600 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79l-1.07 1.07c1.76 3.56 4.81 6.51 8.36 8.27l1.07-1.07c.13-.13.33-.17.51-.08l2.36.98c.18.08.31.25.31.45l.13 2.5c0 .28-.22.5-.5.5-3.32 0-6.5-.83-9.22-2.39C5.35 15.65 3.35 12.9 2.5 10.04c-.1-.31 0-.64.2-.84l2.5-1.1c.18-.08.38-.07.51.05l1.07 1.07c.13.13.17.33.08.51z"/></svg>
-                    Call Us Now: 07076688742
-                </a>
+                <button onclick="openReviewModal()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-blue-700 flex items-center transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.94 8.94 0 01-4.306-.981l-3.235 1.286a.5.5 0 01-.63-.63l1.286-3.235A8.94 8.94 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.543 12.243a.5.5 0 01.634.03l.01.011a4.995 4.995 0 007.623 0l.01-.01a.5.5 0 01.664-.022l1.757 1.054a.5.5 0 01.093.723l-1.054 1.757a.5.5 0 01-.723.093l-1.054-1.757a.5.5 0 01.022-.664l.011-.01a2.995 2.995 0 00-4.573 0l.01.01a.5.5 0 01.023.664l-1.757 1.054a.5.5 0 01-.723-.093l-1.757-1.054a.5.5 0 01.093-.723l1.054-1.757a.5.5 0 01.664.023z" clip-rule="evenodd"></path></svg>
+                    Review / Customer Care
+                </button>
             </div>
+
+            <!-- NEW: FAQ Section (Moved Here) -->
+            <section id="faq-section" class="py-12 bg-white rounded-3xl shadow-xl p-8 md:p-12 my-12 reveal-on-scroll">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
+                <div id="faq-container" class="max-w-4xl mx-auto space-y-4">
+                    <!-- FAQ Item 1 -->
+                    <div class="faq-item bg-gray-50 border border-gray-200 rounded-xl">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-5 font-semibold text-lg text-gray-800">
+                            <span>What exactly can this generator power?</span>
+                            <span class="faq-icon text-red-500 text-2xl transform transition-transform duration-300">+</span>
+                        </button>
+                        <div class="faq-answer px-5 text-gray-600">It's designed for essential appliances. It can comfortably power items like a 32-42 inch LED TV, standing fans, laptops, phones, energy-saving light bulbs, and small printers. It is not suitable for heavy-duty appliances like refrigerators, freezers, or air conditioners.</div>
+                    </div>
+                    <!-- FAQ Item 2 -->
+                    <div class="faq-item bg-gray-50 border border-gray-200 rounded-xl">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-5 font-semibold text-lg text-gray-800">
+                            <span>How long does the battery last on a full charge?</span>
+                            <span class="faq-icon text-red-500 text-2xl transform transition-transform duration-300">+</span>
+                        </button>
+                        <div class="faq-answer px-5 text-gray-600">This depends on the load. For example, it can power a 32-inch TV for about 4-5 hours, a standing fan for 6-8 hours, or charge multiple phones and laptops several times over.</div>
+                    </div>
+                    <!-- FAQ Item 3 -->
+                    <div class="faq-item bg-gray-50 border border-gray-200 rounded-xl">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-5 font-semibold text-lg text-gray-800">
+                            <span>How can I charge the generator?</span>
+                            <span class="faq-icon text-red-500 text-2xl transform transition-transform duration-300">+</span>
+                        </button>
+                        <div class="faq-answer px-5 text-gray-600">You have three convenient options: 1) Plug it into a wall socket (NEPA/PHCN) for about 7-8 hours. 2) Use a 60W solar panel (optional) for about 9-10 hours in direct sunlight. 3) Charge it from your car's cigarette lighter port while on the move.</div>
+                    </div>
+                    <!-- FAQ Item 4 -->
+                    <div class="faq-item bg-gray-50 border border-gray-200 rounded-xl">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-5 font-semibold text-lg text-gray-800">
+                            <span>Is the solar panel included in the price?</span>
+                            <span class="faq-icon text-red-500 text-2xl transform transition-transform duration-300">+</span>
+                        </button>
+                        <div class="faq-answer px-5 text-gray-600">The solar panel is not included in the base packages but can be purchased separately or as part of a special bundle. This allows customers who primarily want to charge via NEPA to get a lower price.</div>
+                    </div>
+                    <!-- FAQ Item 5 -->
+                    <div class="faq-item bg-gray-50 border border-gray-200 rounded-xl">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-5 font-semibold text-lg text-gray-800">
+                            <span>Do you offer Pay on Delivery, and is it free?</span>
+                            <span class="faq-icon text-red-500 text-2xl transform transition-transform duration-300">+</span>
+                        </button>
+                        <div class="faq-answer px-5 text-gray-600">Yes! We offer 100% FREE Pay on Delivery service across all states in Nigeria. You inspect the product and pay only when you are satisfied. No down payment is required.</div>
+                    </div>
+                </div>
+            </section>
+
             <p class="text-xs text-gray-500 mt-4">This site is not part of the Facebook website or Facebook Inc. Additionally, this site is not endorsed by Facebook in any way. FACEBOOK is a trademark of FACEBOOK, Inc.</p>
         </div>
 
@@ -368,7 +679,7 @@
             </div>
             
             <div class="modal-content-scrollable pt-4">
-                <form id="form-1-submission" action="https://formspree.io/f/meovoqaq" method="POST" class="space-y-5">
+                <form id="form-1-submission" action="https://formspree.io/f/mdkrggaq" method="POST" class="space-y-5">
                     <input type="hidden" name="Source" id="form-1-source" value="Modal Form">
                     <input type="hidden" name="Package_Selected" id="form-1-quantity-id">
                     <input type="hidden" name="Price_Total" id="form-1-price-total">
@@ -384,17 +695,21 @@
                     <h4 class="text-lg font-bold text-gray-900 pt-3">2. Shipping Details</h4>
 
                     <div class="grid md:grid-cols-2 gap-4">
-                        <input type="text" name="Full Name" required placeholder="Full Name" class="w-full border-gray-300 rounded-lg p-3">
-                        <input type="tel" name="WhatsApp Number" required placeholder="Phone Number" class="w-full border-gray-300 rounded-lg p-3">
+                        <input type="text" name="Full Name" required placeholder="Full Name" class="w-full border-black rounded-lg p-3 shadow-md">
+                        <input type="tel" name="WhatsApp Number" required placeholder="Phone Number" class="w-full border-black rounded-lg p-3 shadow-md">
+                        <input type="tel" name="Alternative Number" placeholder="Alternative Number (Optional)" class="w-full border-black rounded-lg p-3 shadow-md">
+                        <select name="Delivery State" required id="form-1-state-dropdown" class="w-full border-black rounded-lg p-3 shadow-md">
+                            <!-- States will be populated by JS -->
+                        </select>
                     </div>
-                    <input type="text" name="Delivery State" required placeholder="Delivery State (e.g. Lagos)" class="w-full border-gray-300 rounded-lg p-3">
-                    <textarea name="Full Address" required placeholder="Full Delivery Address" class="w-full border-gray-300 rounded-lg p-3"></textarea>
+                    <textarea name="Full Address" required placeholder="Full Delivery Address" class="w-full border-black rounded-lg p-3 shadow-md"></textarea>
+                    <textarea name="Delivery Note" placeholder="Delivery Note (Optional)" rows="2" class="w-full border-black rounded-lg p-3 shadow-md"></textarea>
 
                     <p id="modal-price-summary" class="text-center text-lg font-bold text-red-600 border-t pt-4">
                         TOTAL (Including Delivery): ₦<span id="modal-total-price">0</span>
                     </p>
 
-                    <button type="submit" class="w-full bg-red-600 text-white font-black py-4 rounded-xl text-xl shadow-lg hover:bg-red-700 transition-colors">
+                    <button type="submit" class="w-full bg-green-800 text-white font-black py-4 rounded-xl text-xl shadow-lg hover:bg-red-700 transition-colors">
                         CONFIRM ORDER NOW
                     </button>
                 </form>
@@ -402,6 +717,58 @@
         </div>
     </div>
     
+    <!-- NEW: Review/Customer Service Modal -->
+    <div id="review-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeModal(event)">
+        <div class="modal-card bg-white rounded-2xl shadow-2xl p-6 transition-all transform scale-100">
+            <div class="flex justify-between items-center pb-4 border-b">
+                <h3 class="text-2xl font-extrabold text-center text-gray-900">Leave a Review or Ask a Question</h3>
+                <button class="text-gray-400 hover:text-red-500 text-2xl" onclick="document.getElementById('review-modal').classList.add('hidden')">&times;</button>
+            </div>
+            
+            <div class="modal-content-scrollable pt-4">
+                <form id="review-form" action="https://formspree.io/f/mdkrggaq" method="POST" class="space-y-5">
+                    <input type="hidden" name="Source" value="Review/Customer Care Form">
+                    <input type="text" name="Full Name" required placeholder="Your Full Name" class="w-full border-black rounded-lg p-3 shadow-md">
+                    <input type="email" name="Email" required placeholder="Your Email Address" class="w-full border-black rounded-lg p-3 shadow-md">
+                    <textarea name="Message" required placeholder="Your review or question..." rows="5" class="w-full border-black rounded-lg p-3 shadow-md"></textarea>
+
+                    <p id="review-thank-you" class="text-center text-lg font-bold text-green-600 hidden">
+                        Thank you for your feedback! We'll get back to you shortly.
+                    </p>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl text-xl shadow-lg hover:bg-blue-700 transition-colors">
+                        SUBMIT FEEDBACK
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Thank You Modal -->
+    <div id="thank-you-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[110] flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeModal(event)">
+        <div class="modal-card bg-white rounded-2xl shadow-2xl p-6 transition-all transform scale-100 text-center">
+            <div class="flex justify-end">
+                <button class="text-gray-400 hover:text-red-500 text-3xl" onclick="document.getElementById('thank-you-modal').classList.add('hidden')">&times;</button>
+            </div>
+            <div class="text-6xl text-green-500 mb-4">
+                ✅
+            </div>
+            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4">Order Received!</h3>
+            <div id="thank-you-message-content" class="text-lg text-gray-700 leading-relaxed space-y-3">
+                <!-- Dynamic content will be inserted here by JS -->
+            </div>
+            <button class="mt-8 bg-green-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-md hover:bg-green-700" onclick="document.getElementById('thank-you-modal').classList.add('hidden')">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- NEW: Floating Cart/Top Button -->
+    <button id="floating-cart-btn" title="Go to Order Form" class="btn-pulse fixed bottom-5 right-5 bg-yellow-400/70 text-red-900 w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-3xl z-[90] transform hover:scale-110 hover:bg-yellow-400 transition-all duration-300">
+        🛒
+    </button>
+
+
     <!-- JavaScript Logic -->
     <script>
         // --- 1. Animation Logic (IntersectionObserver) ---
@@ -424,21 +791,98 @@
             });
         });
 
+        // --- NEW: Video Autoplay on Scroll Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('product-video');
+            if (!video) return;
+
+            const videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Play the video when it enters the viewport
+                        video.play().catch(error => {
+                            console.log("Video autoplay was prevented:", error);
+                        });
+                    } else {
+                        // Pause the video when it leaves the viewport
+                        video.pause();
+                    }
+                });
+            }, { threshold: 0.5 }); // Trigger when 50% of the video is visible
+
+            videoObserver.observe(video);
+        });
+
         // --- 2. Configuration & Data (Updated for Solar Generator) ---
         const ANNOUNCEMENTS = [
+            { type: 'stock', text: 'Hurry! Only {stock} units left at this promo price!', alert: true },
             { text: "🔥 15 Customers just secured their power solution!", alert: true },
             { text: "FREE Delivery is included in the Promo Price!", initial: true },
             { text: "Stock is low! Order now to avoid disappointment.", alert: true },
             { text: "Mrs. Kemi from Abuja just ordered a Twin Pack!", initial: true },
+            { text: "Mr. Samson from Lagos just ordered 2 units 3 minutes ago!", alert: true },
+            { text: "A new order for the Family Pack just came in from Port Harcourt!", initial: true },
+            { text: "Just In: Mrs. Aisha from Kano secured her generator!", alert: true },
+            { text: "Mr. Chinedu from Enugu just placed an order for 1 unit. 5 minutes ago!", initial: true },
+            { text: "Another happy customer! Order from Ibadan just confirmed.", alert: true },
+            { text: "Mr. Bayo from Abeokuta just bought the Best Value pack!", initial: true },
+            { text: "A customer in Kaduna just ordered. Don't miss out!", alert: true },
+            { text: "Just In: Twin Pack order from a customer in Benin City!", initial: true },
+            { text: "Mr. Garba from Sokoto just got his power solution!", alert: true },
+            { text: "A new order was just placed from Jos, Plateau State!", initial: true },
+            { text: "Mrs. Funke from Akure just ordered the Standard Pack!", alert: true },
         ];
 
         // Adapted package names and prices from the source site
         const OFFERS = [
-            { id: 'standard1', promo: '150W Generator + 1 Bulb', price: 109999, original: 127000, savings: 17001, description: 'Best for single rooms and phones.' },
-            { id: 'solar2', promo: '150W Gen + 30W Panel + 1 Bulb', price: 134997, original: 170000, savings: 35003, description: 'Power independence! Zero NEPA required.' },
-            { id: 'solar3', promo: '150W Gen + 30W Panel + 4 Bulbs', price: 139997, original: 180000, savings: 40003, description: 'The Ultimate Home/Shop Power Pack.' },
+            { id: 'standard1', promo: 'Buy 1 Unit', price: 120000, original: 150000, savings: 30000, description: 'Get one portable solar generator with 1 bulb attached, plus free delivery and payment on delivery.' },
+            { id: 'solar2', promo: 'Buy 2 Units (Best Value)', price: 230000, original: 300000, savings: 70000, description: 'Perfect for home and office. Get two portable solar generators, each with 1 bulb attached, plus free delivery and payment on delivery. Save more!' },
+            { id: 'solar3', promo: 'Buy 3 Units (Family Pack)', price: 340000, original: 450000, savings: 110000, description: 'Power for the whole family or business. Get three portable solar generators, each with 1 bulb attached, plus free delivery and payment on delivery. Maximum savings!' },
         ];
         
+        const HERO_CAROUSEL_IMAGES = [
+            'P5.webp', 'P2.webp', 'P1.jpg', 'P4.webp', 'Ai3.png',
+        ];
+
+        const CAROUSEL_IMAGES = [
+            'Ai1.png', 'Ai2.png', 'Ai3.png', 'Ai4.png', 'Ai5.png',
+            'Ai6.png', 'Ai7.png', 'Ai8.png', 'Ai9.png', 'P6.webp',
+        ];
+
+        const SPEC_CAROUSEL_IMAGES = [
+            '360.WebP',
+            '361.WebP',
+            '362.WebP',
+            '363.WebP',
+            '364.WebP',
+            'A10.WebP',
+        ];
+
+        const NIGERIAN_STATES = [
+            "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
+            "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT - Abuja", "Gombe",
+            "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos",
+            "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto",
+            "Taraba", "Yobe", "Zamfara"
+        ];
+        const TESTIMONIALS = [
+            { text: "This generator is a lifesaver! I can finally run my fan and watch TV when NEPA fails. No noise, no fuel stress. Highly recommend!", author: "- Tunde O. (Lagos)" },
+            { text: "I use the 150W + Panel bundle for my small office. It powers my laptop and bulbs for 8 hours. It paid for itself in fuel savings in two months!", author: "- Jane E. (Abuja)" },
+            { text: "The delivery was fast, and the product works as advertised. Simple to use, portable, and strong. Excellent value for money.", author: "- Kunle M. (Ibadan)" },
+            { text: "Ah, this thing na baba! Since I buy am, NEPA no fit hold me ransom again. My shop get light 24/7. E sharp!", author: "- Emeka P. (Onitsha)" },
+            { text: "Perfect for my apartment. I can charge my phone, laptop, and even use my small blender. So convenient!", author: "- Fatima S. (Kano)" },
+            { text: "The solar panel option is the best decision I made. I haven't spent a kobo on fuel in weeks. This is the future!", author: "- David A. (Port Harcourt)" },
+            { text: "My brother, no be lie. This generator silent die. My neighbors no even know say I get light. I dey enjoy my peace.", author: "- Chidi B. (Enugu)" },
+            { text: "I was skeptical at first, but this product is legit. It powers my 32-inch TV and a standing fan for hours. I'm impressed.", author: "- Aisha I. (Kaduna)" },
+            { text: "Omo, the torchlight for this device bright well well! E be like stadium light. Very useful for night time.", author: "- Funke A. (Ogun)" },
+            { text: "Best customer service. They answered all my questions before I ordered and delivery was free to Jos. Thank you!", author: "- Grace L. (Jos)" },
+            { text: "I got the complete package with 4 bulbs. My entire flat is lit up now. No more darkness during my kids' study time.", author: "- Mr. & Mrs. Adewale (Oyo)" },
+            { text: "If you dey find solution for this light problem, abeg, look no further. This solar generator na the real deal. E worth every penny.", author: "- Ibrahim G. (Sokoto)" },
+        ];
+
+        let currentCarouselIndex = 0;
+        let carouselInterval = null; // To hold the interval for auto-play
+
         let selectedQuantityId = null;
 
         // --- 3. Utilities ---
@@ -450,10 +894,27 @@
         let announcementIndex = 0;
         const announcementText = document.getElementById('announcement-text');
         const announcementBar = document.getElementById('announcement-bar');
+        let stockCount = 1000;
 
         function rotateAnnouncement() {
             const item = ANNOUNCEMENTS[announcementIndex];
-            announcementText.textContent = item.text;
+            let textToShow = item.text;
+
+            if (item.type === 'stock') {
+                const reduction = Math.floor(Math.random() * 3) + 1; // Randomly decrease by 1, 2, or 3
+                textToShow = item.text.replace('{stock}', stockCount);
+                stockCount -= reduction; // Decrease stock for next time it shows
+                if (stockCount < 1) stockCount = 0; // Prevent negative stock
+
+                // NEW: Also increase the sales count by the same reduction amount
+                const salesCountEl = document.getElementById('sales-count');
+                if (salesCountEl) {
+                    const currentSales = parseInt(salesCountEl.innerText.replace(/,/g, '').replace('+', '')) || 0;
+                    const newSales = currentSales + reduction;
+                    salesCountEl.innerText = newSales.toLocaleString() + '+';
+                }
+            }
+            announcementText.textContent = textToShow;
             
             if (item.alert) {
                 announcementBar.className = "sticky top-0 w-full bg-yellow-400 text-red-900 font-bold text-center text-sm p-2 shadow-lg z-50 transition-colors duration-300";
@@ -491,11 +952,192 @@
             }, 1000);
         }
 
-        // --- 6. Core Interactions ---
-        // Carousel is not used anymore, but keeping the function definition for safety.
-        // function moveCarousel(dir) { /* removed since carousel is gone */ } 
+        // --- 6. 3D Flip Card Carousel Logic ---
+        function setupFlipCarousel() {
+            const innerCard = document.getElementById('flip-card-inner');
+            const frontImg = document.getElementById('flip-card-img-front');
+            const backImg = document.getElementById('flip-card-img-back');
+            let isFlipped = false;
+            let imageIndex = 0;
 
+            // Preload first two images
+            frontImg.src = CAROUSEL_IMAGES[0];
+            backImg.src = CAROUSEL_IMAGES[1];
+            imageIndex = 1;
+
+            setInterval(() => {
+                // Increment index, looping back to 0 if needed
+                imageIndex = (imageIndex + 1) % CAROUSEL_IMAGES.length;
+                const nextImageSrc = CAROUSEL_IMAGES[imageIndex];
+
+                if (isFlipped) {
+                    // The back is showing, so we will flip to the front.
+                    // Update the front image source for the next reveal.
+                    frontImg.src = nextImageSrc;
+                } else {
+                    // The front is showing, so we will flip to the back.
+                    // Update the back image source for the next reveal.
+                    backImg.src = nextImageSrc;
+                }
+                
+                innerCard.classList.toggle('is-flipped');
+                isFlipped = !isFlipped;
+            }, 3000); // Flip every 3 seconds
+        }
+
+        function setupHeroFlipCarousel() {
+            const innerCard = document.getElementById('hero-flip-card-inner');
+            const frontImg = document.getElementById('hero-flip-card-img-front');
+            const backImg = document.getElementById('hero-flip-card-img-back');
+            let isFlipped = false;
+            let imageIndex = 0;
+
+            // Preload first two images
+            frontImg.src = HERO_CAROUSEL_IMAGES[0];
+            backImg.src = HERO_CAROUSEL_IMAGES[1];
+            imageIndex = 1;
+
+            setInterval(() => {
+                // Increment index, looping back to 0 if needed
+                imageIndex = (imageIndex + 1) % HERO_CAROUSEL_IMAGES.length;
+                const nextImageSrc = HERO_CAROUSEL_IMAGES[imageIndex];
+
+                if (isFlipped) {
+                    // The back is showing, so we will flip to the front.
+                    // Update the front image source for the next reveal.
+                    frontImg.src = nextImageSrc;
+                } else {
+                    // The front is showing, so we will flip to the back.
+                    // Update the back image source for the next reveal.
+                    backImg.src = nextImageSrc;
+                }
+                
+                innerCard.classList.toggle('is-flipped');
+                isFlipped = !isFlipped;
+            }, 3000); // Flip every 3 seconds
+        }
+
+        // --- NEW: Spec Section Flip Card Logic ---
+        function setupSpecFlipCard() {
+            const innerCard = document.getElementById('spec-flip-card-inner');
+            if (!innerCard) return;
+
+            // This function simply toggles the flip class every 7 seconds.
+            // The images are static as defined in the HTML.
+            setInterval(() => {
+                innerCard.classList.toggle('is-flipped');
+            }, 7000); // Flip every 7 seconds as requested
+        }
+
+        // --- NEW: Spec Section Image Carousel Logic ---
+        function setupSpecCarousel() {
+            const track = document.getElementById('spec-carousel-track');
+            const indicatorsContainer = document.getElementById('spec-carousel-indicators');
+            if (!track || !indicatorsContainer) return;
+
+            let currentIndex = 0;
+
+            // Populate track and indicators
+            SPEC_CAROUSEL_IMAGES.forEach((src, index) => {
+                const item = document.createElement('div');
+                item.className = 'carousel-item';
+                item.innerHTML = `<img src="${src}" alt="Specification Carousel Image ${index + 1}" class="w-full h-full object-cover">`;
+                track.appendChild(item);
+
+                const indicator = document.createElement('button');
+                indicator.className = 'carousel-indicator';
+                if (index === 0) indicator.classList.add('active');
+                indicatorsContainer.appendChild(indicator);
+            });
+
+            const indicators = indicatorsContainer.querySelectorAll('.carousel-indicator');
+
+            const advanceCarousel = () => {
+                currentIndex = (currentIndex + 1) % SPEC_CAROUSEL_IMAGES.length;
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === currentIndex);
+                });
+            };
+
+            setInterval(advanceCarousel, 4000); // Change image every 4 seconds
+        }
+
+
+        // --- NEW: Testimonial Carousel Logic ---
+        function startTestimonialCarousel() {
+            const container = document.getElementById('testimonial-cards');
+            let testimonialIndex = 0;
+
+            function showNextTestimonials() {
+                container.innerHTML = ''; // Clear previous cards
+
+                // Get the next 3 testimonials, looping back if necessary
+                for (let i = 0; i < 3; i++) {
+                    const currentTestimonial = TESTIMONIALS[(testimonialIndex + i) % TESTIMONIALS.length];
+                    
+                    const card = document.createElement('div');
+                    // The 'testimonial-card' class triggers the animation defined in the CSS
+                    card.className = 'testimonial-card bg-white p-6 rounded-2xl shadow-lg border-t-4 border-yellow-500 flex flex-col justify-between';
+                    card.innerHTML = `
+                        <p class="italic text-gray-700 mb-4">"${currentTestimonial.text}"</p>
+                        <p class="font-bold text-gray-900">${currentTestimonial.author}</p>
+                    `;
+                    container.appendChild(card);
+                }
+                testimonialIndex = (testimonialIndex + 3) % TESTIMONIALS.length;
+
+                // NEW: Increment review counters when new testimonials are shown
+                const reviewCountEl = document.getElementById('review-count');
+                const positiveReviewsEl = document.getElementById('positive-reviews');
+                if (reviewCountEl && positiveReviewsEl) {
+                    reviewCountEl.innerText = (parseInt(reviewCountEl.innerText.replace(/,/g, '')) + 1).toLocaleString();
+                    positiveReviewsEl.innerText = (parseInt(positiveReviewsEl.innerText.replace(/,/g, '')) + 1).toLocaleString();
+                }
+            }
+            // Initial call after a delay, then set the interval for subsequent changes.
+            setTimeout(() => {
+                showNextTestimonials(); // Show the first set
+                setInterval(showNextTestimonials, 10000); // Change reviews every 10 seconds thereafter
+            }, 4000); // 4-second delay before the first display
+        }
         // --- 7. Quantity Selection Logic ---
+
+        // --- NEW: Live Stats Counter Logic ---
+        function initializeStatsCounters() {
+            // Helper function to animate counting
+            const animateCounter = (el, start, end, duration) => {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    el.innerText = Math.floor(progress * (end - start) + start).toLocaleString();
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            };
+
+            const reviewCountEl = document.getElementById('review-count');
+            const salesCountEl = document.getElementById('sales-count');
+            const positiveReviewsEl = document.getElementById('positive-reviews');
+            const negativeReviewsEl = document.getElementById('negative-reviews');
+
+            // Animate initial numbers
+            animateCounter(reviewCountEl, 0, 2951, 2500);
+            animateCounter(positiveReviewsEl, 0, 2892, 2500); // Approx 98% of 2951
+            animateCounter(negativeReviewsEl, 0, 59, 2500);   // Approx 2% of 2951
+
+            // Animate sales count separately to add the '+'
+            let sales = 6000;
+            animateCounter(salesCountEl, 0, sales, 2000);
+            setTimeout(() => salesCountEl.innerText = sales.toLocaleString() + '+', 2000);
+
+        }
+
+        // --- 8. Quantity Selection Logic ---
         function renderQuantityOptions() {
             const container = document.getElementById('quantity-options');
             const modalContainer = document.getElementById('modal-quantity-options');
@@ -506,22 +1148,22 @@
                 // Main Page Cards
                 const card = document.createElement('div');
                 card.id = `qty-card-${offer.id}`;
-                card.className = `bg-gray-50 p-6 rounded-2xl shadow-md border-2 border-transparent cursor-pointer hover:shadow-xl transition-all relative overflow-hidden group`;
+                card.className = `quantity-card-animated bg-red-100 p-6 rounded-2xl shadow-xl border-4 border-transparent cursor-pointer hover:shadow-2xl transition-all relative overflow-hidden group text-center`;
                 card.onclick = () => selectQuantity(offer.id);
                 
                 card.innerHTML = `
-                    <div class="absolute top-0 right-0 bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-bl-lg">SAVE ₦${formatNaira(offer.savings)}</div>
+                    <div class="absolute top-0 right-0 bg-green-100 text-green-600 text-xs font-bold px-3 py-1 rounded-bl-lg">SAVE ₦${formatNaira(offer.savings)}</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-1">${offer.promo}</h3>
-                    <p class="text-base text-gray-500 line-through">₦${formatNaira(offer.original)}</p>
-                    <p class="text-4xl font-extrabold text-red-600 mb-2">₦${formatNaira(offer.price)}</p>
-                    <p class="text-sm text-gray-600">${offer.description}</p>
-                    <div class="absolute inset-0 border-2 border-red-500 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity pointer-events-none"></div>
+                    <p class="text-base text-red-600 line-through">₦${formatNaira(offer.original)}</p>
+                    <p class="text-4xl font-extrabold text-green-600 mb-2">₦${formatNaira(offer.price)}</p>
+                    <p class="text-sm text-gray-900">${offer.description}</p>
+                    <div class="inner-border absolute inset-0 border-2 border-red-500 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity pointer-events-none"></div>
                 `;
                 container.appendChild(card);
 
                 // Modal Options
                 const label = document.createElement('label');
-                label.className = "flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50";
+                label.className = "flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-100 transition-all duration-200";
                 label.innerHTML = `
                     <input type="radio" name="modal_quantity" value="${offer.id}" class="text-red-600 w-5 h-5 focus:ring-red-500">
                     <div>
@@ -538,13 +1180,12 @@
             selectedQuantityId = id;
             // Clear highlights
             document.querySelectorAll('#quantity-selection-section > div > div').forEach(c => {
-                c.classList.remove('quantity-highlight', 'bg-red-50');
-                c.classList.add('bg-gray-50');
+                c.classList.remove('quantity-highlight');
+                c.classList.add('bg-red-100');
             });
             // Add highlight
             const activeCard = document.getElementById(`qty-card-${id}`);
-            activeCard.classList.add('quantity-highlight', 'bg-red-50');
-            activeCard.classList.remove('bg-gray-50');
+            activeCard.classList.add('quantity-highlight');
             
             // Update Form 2
             const offer = OFFERS.find(o => o.id === id);
@@ -552,9 +1193,13 @@
             document.getElementById('form-2-price-total').value = offer.price;
             document.getElementById('selected-qty-summary-final').innerHTML = 
                 `You selected: <span class="font-bold text-red-600">${offer.promo}</span> (Total Price: ₦${formatNaira(offer.price)})`;
+
+            // NEW: Scroll to the final order form
+            document.getElementById('final-order-form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // --- 8. Modal Logic ---
+        // --- 9. Modal Logic ---
         function openModal(source) {
             document.getElementById('form-1-source').value = source;
             document.getElementById('order-modal').classList.remove('hidden');
@@ -578,7 +1223,11 @@
         }
 
         function closeModal(e) {
-            if (e.target.id === 'order-modal') document.getElementById('order-modal').classList.add('hidden');
+            if (e.target.id === 'order-modal' || e.target.id === 'review-modal' || e.target.id === 'thank-you-modal') {
+                document.getElementById('order-modal').classList.add('hidden');
+                document.getElementById('review-modal').classList.add('hidden');
+                document.getElementById('thank-you-modal').classList.add('hidden');
+            }
         }
 
         function toggleDarkMode() {
@@ -587,11 +1236,132 @@
             document.getElementById('moon-icon').classList.toggle('hidden');
         }
 
+        // --- NEW: Function to populate state dropdowns ---
+        function populateStateDropdowns() {
+            const dropdowns = [document.getElementById('form-1-state-dropdown'), document.getElementById('form-2-state-dropdown')];
+            dropdowns.forEach(dropdown => {
+                if (!dropdown) return;
+                dropdown.innerHTML = '<option value="">-- Select Your State --</option>'; // Add a placeholder
+                NIGERIAN_STATES.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.textContent = state;
+                    dropdown.appendChild(option);
+                });
+            });
+        }
+        // --- NEW: Function to Open Review Modal ---
+        function openReviewModal() {
+            document.getElementById('review-modal').classList.remove('hidden');
+        }
+
+        // --- NEW: Reusable Text-to-Speech Function ---
+        function speakText(textToSpeak) {
+            // Check for browser support for Speech Synthesis
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.rate = 0.9; // Slightly slower for clarity
+                utterance.pitch = 1.1;
+
+                const setVoiceAndSpeak = () => {
+                    const voices = speechSynthesis.getVoices();
+                    // Find a female voice. The names can vary by browser/OS.
+                    let femaleVoice = voices.find(voice => voice.name.includes('Female')) || 
+                                      voices.find(voice => voice.name.includes('Google UK English Female')) ||
+                                      voices.find(voice => voice.name.includes('Zira')) ||
+                                      voices.find(voice => voice.lang.startsWith('en-') && voice.name.includes('Female'));
+
+                    if (femaleVoice) {
+                        utterance.voice = femaleVoice;
+                        speechSynthesis.speak(utterance); // Only speak if a female voice is found
+                    }
+                };
+
+                // The voices list loads asynchronously.
+                speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+                setVoiceAndSpeak(); // Also call it directly in case voices are already loaded.
+            }
+        }
+        // --- NEW: Welcome Greeting Logic ---
+        function handleWelcomeSequence() {
+            const welcomeText = "Welcome! Your reliable power solution is just a moment away...";
+
+            const playWelcomeMessage = () => {
+                try {
+                    // Check for browser support and ensure it's not already speaking
+                    if ('speechSynthesis' in window && !speechSynthesis.speaking) {
+                        speakText(welcomeText);
+                    }
+                } catch (error) {
+                    console.error("TTS playback failed:", error);
+                }
+            };
+
+            // Attempt to play on various user interactions
+            const tryToPlay = () => {
+                playWelcomeMessage();
+                // Remove listeners after the first attempt
+                window.removeEventListener('touchstart', tryToPlay);
+                window.removeEventListener('click', tryToPlay);
+                window.removeEventListener('scroll', tryToPlay);
+            };
+
+            window.addEventListener('touchstart', tryToPlay, { passive: true });
+            window.addEventListener('click', tryToPlay);
+            window.addEventListener('scroll', tryToPlay, { passive: true });
+        }
+        // --- NEW: Floating Cart Button Logic ---
+        function setupFloatingCartButton() {
+            const floatingBtn = document.getElementById('floating-cart-btn');
+            const finalFormSection = document.getElementById('final-order-form-section');
+            let isBackToTopMode = false;
+
+            if (!floatingBtn || !finalFormSection) return;
+
+            // Click handler
+            floatingBtn.addEventListener('click', () => {
+                if (isBackToTopMode) {
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    // Scroll to final order form
+                    finalFormSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            // Observer to change button function
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        floatingBtn.innerHTML = '⬆️';
+                        floatingBtn.title = 'Back to Top';
+                        isBackToTopMode = true;
+                    } else {
+                        floatingBtn.innerHTML = '🛒';
+                        floatingBtn.title = 'Go to Order Form';
+                        isBackToTopMode = false;
+                    }
+                });
+            }, { threshold: 0.4 }); // Trigger when 40% of the form is visible
+
+            observer.observe(finalFormSection);
+        }
+
         // --- Init ---
         window.onload = function() {
+            handleWelcomeSequence(); // Start the welcome sequence
+            populateStateDropdowns();
             renderQuantityOptions();
+            setupFlipCarousel();
+            setupSpecCarousel();
+            setupSpecFlipCard();
+            setupHeroFlipCarousel();
+            setupFloatingCartButton(); // Initialize the new floating button
             rotateAnnouncement();
-            setInterval(rotateAnnouncement, 4000);
+            startTestimonialCarousel();
+
+            initializeStatsCounters();
+            setInterval(rotateAnnouncement, 8000); // Increased from 4s to 8s
             startCountdown();
             selectQuantity('standard1'); // Default select the cheapest package
             
@@ -625,14 +1395,96 @@
                 }
                 
                 // Process submission (Formspree example is retained)
-                // In a real app, you would fetch() the form data to Formspree, and on success, redirect.
-                // For this environment, we simulate the success by redirecting to a dummy page.
-                window.location.href = 'thankyou-page.html'; // Redirect to a placeholder confirmation
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                }).then(response => {
+                    if (response.ok) {
+                        // Determine delivery time based on state
+                        const state = formData.get('Delivery State');
+                        const isLagosOrAbuja = state === 'Lagos' || state === 'FCT - Abuja';
+                        const deliveryEstimate = isLagosOrAbuja 
+                            ? 'Delivery within Lagos and Abuja takes 1-2 business days.' 
+                            : 'Delivery to other states takes 2-3 business days.';
+
+                        // Construct the full message
+                        const thankYouMessage = `Thank you for your order! Our customer care will contact you shortly to confirm your details. ${deliveryEstimate}`;
+                        
+                        // Populate and show the thank you modal
+                        const thankYouContent = document.getElementById('thank-you-message-content');
+                        thankYouContent.innerHTML = `
+                            <p>Thank you for your order! Our customer care will contact you shortly to confirm your details.</p>
+                            <p class="font-bold">${deliveryEstimate}</p>
+                        `;
+                        document.getElementById('thank-you-modal').classList.remove('hidden');
+                        
+                        // Speak the confirmation message
+                        speakText(thankYouMessage);
+
+                        // Reset the form
+                        form.reset();
+                        document.getElementById('order-modal').classList.add('hidden'); // Close order modal if open
+                    } else {
+                        alert("There was a problem with your submission. Please try again.");
+                    }
+                }).catch(error => {
+                    alert("There was a network problem. Please check your connection and try again.");
+                });
             };
             
             document.getElementById('form-1-submission').addEventListener('submit', handleFormSubmission);
             document.getElementById('form-2-submission').addEventListener('submit', handleFormSubmission);
 
+            // --- NEW: Review Form Submission Logic ---
+            document.getElementById('review-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const thankYouMessage = document.getElementById('review-thank-you');
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                }).then(response => {
+                    if (response.ok) {
+                        // Show thank you message
+                        thankYouMessage.classList.remove('hidden');
+
+                        // Speak the thank you message
+                        speakText(thankYouMessage.textContent);
+                        
+                        // Reset form and hide message after a delay
+                        setTimeout(() => {
+                            form.reset();
+                            thankYouMessage.classList.add('hidden');
+                            document.getElementById('review-modal').classList.add('hidden'); // Close modal
+                        }, 4000); // 4-second delay
+                    } else {
+                        alert("There was a problem submitting your feedback. Please try again.");
+                    }
+                }).catch(error => {
+                    alert("A network error occurred. Please check your connection and try again.");
+                });
+            });
+
+            // --- NEW: FAQ Accordion Logic ---
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    const faqItem = button.parentElement;
+                    const icon = button.querySelector('.faq-icon');
+
+                    faqItem.classList.toggle('active');
+
+                    if (faqItem.classList.contains('active')) {
+                        icon.textContent = '−'; // Minus sign
+                    } else {
+                        icon.textContent = '+'; // Plus sign
+                    }
+                });
+            });
         };
     </script>
 </body>
